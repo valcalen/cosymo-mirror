@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+
+is-update-available () {
+    [[ -f latest ]] && {
+        LATEST_INSTALLED=$(cat latest)
+        rm latest
+    }
+
+    wget https://github.com/valcalen/cosymo-mirror/raw/master/latest
+    LATEST_AVAILABLE=$(cat 'latest')
+
+    [[ "$LATEST_INSTALLED" = "$LATEST_AVAILABLE" ]] && return 1
+    return 0
+}
+
+update () {
+    [[ -d lib/ ]] && rm -r lib/
+    [[ -f cosymo.jar ]] && rm cosymo.jar
+
+    wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo.zip
+    unzip -u cosymo.zip
+    rm cosymo.zip
+
+
+    [[ -f cosymo ]] && rm cosymo
+    wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo
+    chmod +x cosymo
+}
+
+
+run () {
+    JAR_PATH=cosymo.jar
+    LIBRARIES=( lib/*.jar )
+    
+    CLASSPATH="$JAR_PATH$(printf ':%s' ${LIBRARIES[@]})"
+    java -cp $CLASSPATH cosymo.Main $*
+}
+
+
+if is-update-available; then
+    update
+fi
+
+run

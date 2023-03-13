@@ -17,26 +17,30 @@ is-update-available () {
 }
 
 update () {
-    [[ -d lib/ ]] && rm -r lib/
+    # remove files that will be updated
     [[ -f cosymo.jar ]] && rm cosymo.jar
+	[[ -f cosymo ]] && rm cosymo
+	
+	
+	# fetch application starter
+    wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo
+    chmod +x cosymo
 
+	# fetch program files
     wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo.zip
     unzip -u cosymo.zip
     rm cosymo.zip
-
-
-    [[ -f cosymo ]] && rm cosymo
-    wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo
-    chmod +x cosymo
+    
+    # execute post-install script (if present)
+    [[ -x postinstall ]] && {
+    	. postinstall
+    	rm postinstall
+    }
 }
 
 
 run () {
-    JAR_PATH=cosymo.jar
-    LIBRARIES=( lib/*.jar )
-    
-    CLASSPATH="$JAR_PATH$(printf ':%s' ${LIBRARIES[@]})"
-    java -cp $CLASSPATH cosymo.Main $*
+    java -jar cosymo.jar $*
 }
 
 

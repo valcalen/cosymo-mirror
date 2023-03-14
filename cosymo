@@ -9,7 +9,7 @@ is-update-available () {
         rm latest
     }
 
-    wget https://github.com/valcalen/cosymo-mirror/raw/master/latest
+    wget https://github.com/valcalen/cosymo-mirror/raw/master/latest || return 1
     LATEST_AVAILABLE=$(cat 'latest')
 
     [[ "$LATEST_INSTALLED" = "$LATEST_AVAILABLE" ]] && return 1
@@ -37,6 +37,8 @@ update () {
     	./postinstall
     	rm postinstall
     }
+    
+    sleep 1
 }
 
 

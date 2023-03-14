@@ -18,22 +18,23 @@ is-update-available () {
 
 update () {
     # remove files that will be updated
+    [[ -d lib ]] && rm -r lib/
     [[ -f cosymo.jar ]] && rm cosymo.jar
-	[[ -f cosymo ]] && rm cosymo
+    [[ -f cosymo ]] && rm cosymo
 	
 	
-	# fetch application starter
+    # fetch application starter
     wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo
     chmod +x cosymo
 
-	# fetch program files
+    # fetch program files
     wget https://github.com/valcalen/cosymo-mirror/raw/master/cosymo.zip
     unzip -u cosymo.zip
     rm cosymo.zip
-    
+
     # execute post-install script (if present)
     [[ -x postinstall ]] && {
-    	. postinstall
+    	./postinstall
     	rm postinstall
     }
 }
@@ -49,3 +50,4 @@ if is-update-available; then
 fi
 
 run
+
